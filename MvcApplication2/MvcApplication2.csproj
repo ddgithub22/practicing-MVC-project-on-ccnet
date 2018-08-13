@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <MSBuildExtensionPackPath>C:\Program Files (x86)\MSBuild\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks</MSBuildExtensionPackPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -344,10 +345,45 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-  </Target> -->
+  </Target>-->
+    <Import Project="$(MSBuildExtensionPackPath)" Condition="Exists('$(MSBuildExtensionPackPath)')" />
+  <Target Name="BeforeBuild" Condition="Exists('$(MSBuildExtensionPackPath)')">
+    <ItemGroup>
+      <AssemblyInfoFiles Include="**\AssemblyInfo.*" />
+    </ItemGroup>
+    <MSBuild.ExtensionPack.Framework.AssemblyInfo AssemblyInfoFiles="@(AssemblyInfoFiles)" AssemblyVersion="$(VersionNumber)" AssemblyFileVersion="$(VersionNumber)" Condition="'$(CCNetLabel)' != ''" />
+  </Target>
+  <Target Name="Package">
+    <ItemGroup>
+      <FilesToZip Include="$(MSBuildProjectDirectory)\bin\**\*.*" Exclude="$(MSBuildProjectDirectory)\bin\**\*.pdb" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.asax" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.cshtml" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.html" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.js" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.css" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.less" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.png" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.jpg" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.gif" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.jpeg" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.bmp" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.eot" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.svg" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.ttf" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.woff" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\packages.config" />
+    </ItemGroup>
+    <MSBuild.ExtensionPack.Compression.Zip TaskAction="Create" CompressFiles="@(FilesToZip)" ZipFileName="$(CCNetArtifactDirectory)\$(CCNetLabel)\MvcApplication2_$(CCNetLabel).zip" RemoveRoot="$(MSBuildProjectDirectory)" />
+  </Target>
+  <Target Name="Deploy">
+    <MSBuild.ExtensionPack.Compression.Zip TaskAction="Extract" ZipFileName="$(CCNetArtifactDirectory)\$(CCNetLabel)\MvcApplication2_$(CCNetLabel).zip" ExtractPath="$(CCNetArtifactDirectory)\MvcApplication2_$(CCNetLabel)" />
+    <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(CCNetArtifactDirectory)\MvcApplication2_$(CCNetLabel)" Destination="$(DeployPath)" Files="*.*" Options="/S" />
+    <RemoveDir Directories="$(CCNetArtifactDirectory)\MvcApplication2_$(CCNetLabel)" />
+  </Target>
 </Project>
