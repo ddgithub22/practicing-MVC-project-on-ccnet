@@ -326,6 +326,30 @@
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
+  <Target Name="Package">
+    <ItemGroup>
+      <FilesToZip Include="$(MSBuildProjectDirectory)\bin\**\*.dll" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Content\**\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\App\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\App\Login\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\Bootstrap\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\Extensions\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\Hermes\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\Jquery\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Scripts\Plugins\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\src\**\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\Views\**\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\jspm_packages\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\fonts\*.*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\*.asax*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\*.js*" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\packages.config" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\dependency.config" />
+      <FilesToZip Include="$(MSBuildProjectDirectory)\**\*.ashx" />
+    </ItemGroup>
+    <MakeDir Condition="!Exists('$(CCNetArtifactDirectory)\$(CCNetLabel)')" Directories="$(CCNetArtifactDirectory)\$(CCNetLabel)" />
+    <MSBuild.ExtensionPack.Compression.Zip TaskAction="Create" CompressFiles="@(FilesToZip)" ZipFileName="$(CCNetArtifactDirectory)\$(CCNetLabel)\MvcApplication2_$(CCNetLabel).zip" RemoveRoot="$(MSBuildProjectDirectory)" />
+  </Target>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
